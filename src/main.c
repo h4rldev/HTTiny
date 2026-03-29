@@ -8,12 +8,27 @@
 
 #include <httiny/arena.h>
 #include <httiny/assert.h>
+#include <httiny/handler.h>
 #include <httiny/header.h>
 #include <httiny/http.h>
 #include <httiny/socket.h>
 #include <httiny/types.h>
 
 #define BUFFER_SIZE MiB(1)
+
+int not_found_handler(httiny_http_req *req) {
+  httiny_arena_t *arena = req->thread_arena;
+
+  req->resp->status = 404;
+  req->resp->reason =
+      HTTINY_STR("Not Found"); // Can be NULL and HTTINY will generate the
+                               // appropriate reason
+
+  httiny_send_resp(req);
+
+  return 0; // If you return non-zero it will respond with a set body or the set
+            // 404 file (TODO)
+}
 
 void *handle_connection(void *arg) {
   int client_sockfd = *(int *)arg;
@@ -27,11 +42,6 @@ void *handle_connection(void *arg) {
   }
 
   printf("Bytes received: %lu\n", received);
-  httiny_http_resp *resp = http_resp_new(arena, HTTINY_STR("Hello World"), 200);
-  printf("Sending resp\n");
-  httiny_assert(send_http_resp(arena, client_sockfd, resp) == 0 &&
-                "Failed to send normal response");
-  printf("Sent resp\n");
 
 Close:
   close(client_sockfd);

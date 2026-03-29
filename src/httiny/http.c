@@ -155,9 +155,9 @@ static string *generate_date(httiny_arena_t *arena) {
   time_t t = time(NULL);
   struct tm *tm = gmtime(&t);
 
-  cstr *date = arena_push(arena, sizeof(cstr) * 36);
-  strftime(date, 36, "Date: %a, %d %b %Y %H:%M:%S GMT", tm);
-  return string_new(arena, date, 35);
+  cstr *date = arena_push(arena, sizeof(cstr) * 30);
+  strftime(date, 30, "%a, %d %b %Y %H:%M:%S GMT", tm);
+  return string_new(arena, date, 29);
 }
 
 static string *get_reason(httiny_arena_t *arena, u16 status) {
@@ -175,14 +175,18 @@ httiny_http_resp *http_resp_new(httiny_arena_t *arena, string *body,
   resp->reason = get_reason(arena, status);
 
   httiny_header_list_t *headers = header_list_new(arena, 2, NULL);
-  header_append(arena, &headers, HTTINY_STR("Server: HTTiny"));
+  add_header(arena, &headers, HTTINY_SERVER, HTTINY_STR("Server"),
+             HTTINY_STR("HTTiny"));
 
   if (status >= 200 && (status != 204 && status != 304)) {
-    header_append(arena, &headers, generate_date(arena));
-    header_append(arena, &headers, HTTINY_STR("Transfer-Encoding: chunked"));
+    add_header(arena, &headers, HTTINY_DATE, HTTINY_STR("Date"),
+               generate_date(arena));
+    add_header(arena, &headers, HTTINY_TRANSFER_ENCODING,
+               HTTINY_STR("Transfer-Encoding"), HTTINY_STR("chunked"));
   }
 
-  header_append(arena, &headers, HTTINY_STR("Connection: keep-alive"));
+  add_header(arena, &headers, HTTINY_CONNECTION, HTTINY_STR("Connection"),
+             HTTINY_STR("Connection: keep-alive"));
 
   resp->headers = headers;
   return resp;
@@ -228,14 +232,16 @@ string *stringify_http_header(httiny_arena_t *arena, httiny_http_resp *resp) {
   return http_message;
 }
 
-int send_http_resp(httiny_arena_t *arena, int sockfd, httiny_http_resp *resp) {
+void httiny_send_resp(httiny_http_req *req) {
+  int client_sockfd = req->conn.client_sockfd;
+  httiny_arena_t *arena = req->thread_arena;
+  httiny_http_resp *resp = req->resp;
+
   string *http_header = stringify_http_header(arena, resp);
-  stream_chunk(arena, sockfd, http_header);
+  stream_chunk(arena, req->conn.client_sockfd, http_header);
 
   httiny_http_msg_chunks_t *chunks = split_to_chunks(arena, resp->body, 1024);
 
   for (u64 i = 0; i < chunks->size; i++)
-    send_chunk(arena, sockfd, chunks->chunks[i]);
-
-  return 0;
+    send_chunk(arena, client_sockfd, chunks->chunks[i]);
 }
