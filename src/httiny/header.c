@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <string.h>
 
 #include <httiny/arena.h>
@@ -577,5 +578,6 @@ u64 add_header(httiny_arena_t *arena, httiny_header_list_t **header_list,
   httiny_assert(header != NULL && "Failed to create header");
 
   __header_append(arena, header_list, header);
+
   return (*header_list)->size - 1;
 }

@@ -39,6 +39,8 @@ typedef string httiny_header_value_t;
 // Type aliases of char to make it more explicit
 typedef char cstr;
 typedef cstr cstr_nullable;
+typedef unsigned char ucstr;
+typedef ucstr ucstr_nullable;
 
 /*
  * @brief The httiny arena struct.
@@ -237,8 +239,8 @@ typedef struct {
 typedef struct {
   httiny_header_list_t *headers;
   string *body;
-  u16 status;
   string *reason;
+  u16 status;
 } httiny_http_resp_t;
 
 /*
@@ -308,23 +310,6 @@ typedef struct {
 } httiny_path_list_t;
 
 /*
- * @brief The global path configuration for handling what path is for each
- * handler.
- *
- * @param path_list The list of paths to handle.
- * @param handler_list The list of handlers to handle requests.
- * @param shared_capacity The capacity of the path list and handler list.
- *
- * @note path_list[index] corresponds to handler_list[index]
- */
-typedef struct {
-  httiny_arena_t *thread_arena;
-  httiny_path_list_t *path_list;
-  httiny_handler_list_t *handler_list;
-  u64 shared_capacity;
-} httiny_path_conf_t;
-
-/*
  * @brief The http version to use.
  *
  * @param HTTP_1_0 HTTP/1.0
@@ -334,5 +319,44 @@ typedef enum {
   HTTP_1_0,
   HTTP_1_1,
 } httiny_http_ver_t;
+
+/*
+ * @brief A file to serve.
+ *
+ * @param file_data The data of the file.
+ * @param mime_type The mime type of the file.
+ */
+typedef struct {
+  string *file_path;
+  string *mime_type;
+} httiny_file_t;
+
+/*
+ * @brief A list of files to serve.
+ *
+ * @param file The file to serve.
+ * @param size The size of the list.
+ */
+typedef struct {
+  httiny_file_t **files;
+  u64 size;
+} httiny_file_list_t;
+
+/*
+ * @brief The global path configuration for handling what path is for each
+ * handler.
+ *
+ * @param thread_arena The arena for path_conf use.
+ * @param handler_conf The configuration for handlers.
+ * @param file_conf The configuration for files.
+ *
+ * @note x_list[index] corresponds to other list in same struct
+ */
+typedef struct {
+  httiny_arena_t *thread_arena;
+  httiny_path_list_t *path_list;
+  httiny_handler_list_t *handler_list;
+  u64 shared_capacity;
+} httiny_path_conf_t;
 
 #endif // !HTTINY_TYPES_H

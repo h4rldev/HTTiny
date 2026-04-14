@@ -282,7 +282,6 @@ void httiny_send_resp(httiny_http_req_t *req) {
   stream_chunk(arena, req->conn.client_sockfd, http_header);
 
   httiny_http_msg_chunks_t *chunks = split_to_chunks(arena, resp->body, 1024);
-
   for (u64 i = 0; i < chunks->size; i++)
     send_chunk(arena, client_sockfd, chunks->chunks[i]);
 }

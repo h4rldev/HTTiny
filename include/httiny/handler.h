@@ -4,6 +4,18 @@
 #include <httiny/types.h>
 
 /*
+ * @brief Grows the path conf by the given capacity.
+ *
+ * @param arena The arena to allocate the path conf from.
+ * @param path_conf The path conf to grow.
+ * @param new_capacity The new capacity to grow the path conf to.
+ *
+ * @note This function is for internal use only and isn't static due to file.c
+ */
+void __httiny_path_conf_grow(httiny_arena_t *arena,
+                             httiny_path_conf_t **path_conf, u64 new_capacity);
+
+/*
  * @brief Creates a new path conf with the given arena.
  *
  * @param thread_arena The arena to allocate the path conf from.

@@ -6,6 +6,9 @@ with pkgs;
 
     buildInputs = [
       mold
+      glibc
+      glibc.static
+      file
     ];
 
     packages = [
@@ -14,5 +17,9 @@ with pkgs;
       clang-tools
       valgrind
       gf
+      asm-lsp
+      prettierd
+      doctoc
+      cbfmt
     ];
   }

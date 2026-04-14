@@ -23,7 +23,7 @@ string *string_new(httiny_arena_t *arena, const cstr_nullable *data, u64 len);
  *
  * @return The cstring.
  */
-const char *string_get_cstr(httiny_arena_t *arena, string *string);
+const char *string_get_cstr(httiny_arena_t *arena, const string *string);
 
 /*
  * @brief Duplicates a string.
@@ -33,7 +33,7 @@ const char *string_get_cstr(httiny_arena_t *arena, string *string);
  *
  * @return The duplicated string.
  */
-string *string_dup(httiny_arena_t *arena, string *src);
+string *string_dup(httiny_arena_t *arena, const string *src);
 
 /*
  * @brief Compares two strings.
@@ -43,7 +43,7 @@ string *string_dup(httiny_arena_t *arena, string *src);
  *
  * @return true if the strings are equal, false otherwise.
  */
-bool string_compare(string *first, string *second);
+bool string_compare(const string *first, const string *second);
 
 /*
  * @brief Compare n bytes of second with the first string.
@@ -54,7 +54,7 @@ bool string_compare(string *first, string *second);
  *
  * @return true if the strings are equal, false otherwise.
  */
-bool stringn_compare(string *first, string *second, u64 nbytes);
+bool stringn_compare(const string *first, const string *second, u64 nbytes);
 
 /*
  * @brief Compares two strings case insensitive.
@@ -64,7 +64,8 @@ bool stringn_compare(string *first, string *second, u64 nbytes);
  *
  * @return true if the strings are equal, false otherwise.
  */
-bool stringcase_compare(httiny_arena_t *arena, string *first, string *second);
+bool stringcase_compare(httiny_arena_t *arena, const string *first,
+                        const string *second);
 
 /*
  * @brief Compare n bytes of second with the first string case insensitive.
@@ -74,8 +75,8 @@ bool stringcase_compare(httiny_arena_t *arena, string *first, string *second);
  * @param second The second string to compare.
  * @param nbytes The number of bytes to compare.
  */
-bool stringncase_compare(httiny_arena_t *arena, string *first, string *second,
-                         u64 nbytes);
+bool stringncase_compare(httiny_arena_t *arena, const string *first,
+                         const string *second, u64 nbytes);
 
 /*
  * @brief Concatenates two strings, essentially appending `src` to `dest`.
@@ -85,7 +86,7 @@ bool stringncase_compare(httiny_arena_t *arena, string *first, string *second,
  *
  * @return The new string.
  */
-string *stringcat(string *dest, string *src);
+string *stringcat(string *dest, const string *src);
 
 /*
  * @brief Concatenates nbytes from `src` to `dest`.
@@ -96,7 +97,7 @@ string *stringcat(string *dest, string *src);
  *
  * @return The new string.
  */
-string *stringncat(string *dest, string *src, u64 nbytes);
+string *stringncat(string *dest, const string *src, u64 nbytes);
 
 /*
  * @brief Prints a string.
@@ -105,14 +106,14 @@ string *stringncat(string *dest, string *src, u64 nbytes);
  *
  * @return The number of bytes printed.
  */
-ssize_t print_string(string *str);
+ssize_t print_string(const string *str);
 
 /*
  * @brief Prints a string in hex.
  *
  * @param str The string to print.
  */
-void print_string_hex(string *str);
+void print_string_hex(const string *str);
 
 #define HTTINY_STR(str) string_new(arena, str, sizeof(str) - 1)
 #define HTTINY_STR_LIT(str) str, sizeof(str) - 1

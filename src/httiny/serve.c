@@ -37,8 +37,8 @@ static int default_not_found_handler(void *state, httiny_http_req_t *req) {
             // 404 file (TODO)
 }
 
-static bool path_exist(httiny_path_conf_t *path_conf, string *path,
-                       u64 *index) {
+static bool handler_path_exist(httiny_path_conf_t *path_conf, string *path,
+                               u64 *index) {
   for (u64 i = 0; i < path_conf->handler_list->size; i++)
     if (string_compare(path, path_conf->path_list->paths[i])) {
       *index = i;
@@ -60,11 +60,12 @@ static void *handle_connection(void *arg) {
   }
 
   printf("Bytes received: %lu\n", received);
+
   httiny_http_req_t *req = http_req_new(arena, client_sockfd, request);
   string *path = req->path;
   u64 idx = 0;
 
-  if (path_exist(static_path_conf, path, &idx)) {
+  if (handler_path_exist(static_path_conf, path, &idx)) {
     int ret = static_path_conf->handler_list->handlers[idx]->callback(
         static_path_conf->handler_list->handlers[idx]->state, req);
     if (ret != 0)

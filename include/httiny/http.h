@@ -9,6 +9,7 @@
  *
  * @param arena The arena to allocate the request from (is the thread arena for
  * the current registered handler).
+ * @param host The host header valua to send in the request.
  * @param sockfd The socket from the request thread.
  * @param req_message The request message body.
  *
